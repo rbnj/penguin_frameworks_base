@@ -64,6 +64,7 @@ import com.android.systemui.statusbar.phone.StatusIconContainer
 import com.android.systemui.statusbar.phone.StatusOverlayHoverListenerFactory
 import com.android.systemui.statusbar.policy.Clock
 import com.android.systemui.statusbar.policy.ConfigurationController
+import com.android.systemui.statusbar.policy.NetworkTraffic
 import com.android.systemui.statusbar.policy.NextAlarmController
 import com.android.systemui.statusbar.policy.VariableDateView
 import com.android.systemui.statusbar.policy.VariableDateViewController
@@ -136,12 +137,14 @@ constructor(
     private val iconContainer: StatusIconContainer = header.requireViewById(R.id.statusIcons)
     private val mShadeCarrierGroup: ShadeCarrierGroup = header.requireViewById(R.id.carrier_group)
     private val systemIcons: View = header.requireViewById(R.id.shade_header_system_icons)
+    private val networkTraffic: NetworkTraffic? = header.findViewById(R.id.networkTraffic)
 
     private var roundedCorners = 0
     private var cutout: DisplayCutout? = null
     private var lastInsets: WindowInsets? = null
     private var nextAlarmIntent: PendingIntent? = null
 
+    private var privacyChipVisible = false
     private var qsDisabled = false
     private var visible = false
         set(value) {
@@ -243,6 +246,8 @@ constructor(
                 val update =
                     combinedShadeHeadersConstraintManager.privacyChipVisibilityConstraints(visible)
                 header.updateAllConstraints(update)
+                privacyChipVisible = visible
+                setNetworkTrafficVisible(qsExpandedFraction == 1f && !privacyChipVisible)
             }
         }
 
@@ -504,6 +509,7 @@ constructor(
             header.progress = qsExpandedFraction
             updateBatteryMode()
         }
+        setNetworkTrafficVisible(qsExpandedFraction == 1f && !privacyChipVisible)
     }
 
     private fun logInstantEvent(message: String) {
@@ -552,6 +558,11 @@ constructor(
             clockPaddingEnd,
             clock.paddingBottom
         )
+    }
+
+    private fun setNetworkTrafficVisible(visible: Boolean) {
+        val isLandscape = resources.configuration.orientation == Configuration.ORIENTATION_LANDSCAPE
+        networkTraffic!!.setAlpha(if (visible && !isLandscape) 1f else 0f)
     }
 
     override fun dump(pw: PrintWriter, args: Array<out String>) {
