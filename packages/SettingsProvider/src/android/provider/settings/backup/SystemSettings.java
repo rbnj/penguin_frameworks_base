@@ -111,5 +111,6 @@ public class SystemSettings {
         Settings.System.VIBRATE_ON_CALLWAITING,
         Settings.System.VIBRATE_ON_DISCONNECT,
         Settings.System.LOCKSCREEN_BATTERY_INFO,
+        Settings.System.STATUS_BAR_BATTERY_STYLE,
     };
 }
