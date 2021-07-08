@@ -236,4 +236,7 @@
     <!-- Whether to cancel fingerprint operation if not idle -->
     <bool name="config_fpCancelIfNotIdle">false</bool>
 
+    <!-- Whether to use VPN Tethering -->
+    <bool name="config_enable_vpntethering">true</bool>
+
 </resources>
