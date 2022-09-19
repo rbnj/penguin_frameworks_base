@@ -112,4 +112,7 @@
 
     <!-- Volume panel -->
     <color name="volume_seekbar_bg">@android:color/system_accent2_700</color>
+    
+    <!-- Footer Actions -->
+    <color name="footer_actions_bg">@android:color/system_neutral1_900</color>
 </resources>
