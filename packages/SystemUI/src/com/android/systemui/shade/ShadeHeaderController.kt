@@ -21,15 +21,19 @@ import android.animation.AnimatorListenerAdapter
 import android.annotation.IdRes
 import android.app.PendingIntent
 import android.app.StatusBarManager
-import android.content.Intent
 import android.content.Context
+import android.content.Intent
 import android.content.res.ColorStateList
 import android.content.res.Configuration
+import android.net.Uri
 import android.graphics.Color
 import android.os.Bundle
 import android.os.Trace
 import android.os.Trace.TRACE_TAG_APP
+import android.os.VibrationEffect
+import android.os.Vibrator
 import android.provider.AlarmClock
+import android.provider.CalendarContract
 import android.util.Pair
 import android.view.DisplayCutout
 import android.view.View
@@ -106,7 +110,7 @@ constructor(
     private val nextAlarmController: NextAlarmController,
     private val activityStarter: ActivityStarter,
     private val statusOverlayHoverListenerFactory: StatusOverlayHoverListenerFactory,
-) : ViewController<View>(header), Dumpable {
+) : ViewController<View>(header), Dumpable, View.OnClickListener, View.OnLongClickListener {
 
     companion object {
         /** IDs for transitions and constraints for the [MotionLayout]. */
@@ -142,6 +146,7 @@ constructor(
     private val mShadeCarrierGroup: ShadeCarrierGroup = header.requireViewById(R.id.carrier_group)
     private val systemIcons: View = header.requireViewById(R.id.shade_header_system_icons)
     private val networkTraffic: NetworkTraffic? = header.findViewById(R.id.networkTraffic)
+    private val vibrator: Vibrator = header.context.getSystemService(Context.VIBRATOR_SERVICE) as Vibrator
 
     private var roundedCorners = 0
     private var cutout: DisplayCutout? = null
@@ -200,6 +205,7 @@ constructor(
             if (qsVisible && field != value) {
                 header.alpha = ShadeInterpolation.getContentAlpha(value)
                 field = value
+                updateVisibility()
             }
         }
 
@@ -253,6 +259,7 @@ constructor(
                 header.updateAllConstraints(update)
                 privacyChipVisible = visible
                 setNetworkTrafficVisible(qsExpandedFraction == 1f && !privacyChipVisible)
+                setBatteryClickable(qsExpandedFraction == 1f || !visible)
             }
         }
 
@@ -328,6 +335,39 @@ constructor(
             shadeCarrierGroupControllerBuilder.setShadeCarrierGroup(mShadeCarrierGroup).build()
 
         privacyIconsController.onParentVisible()
+
+        // click actions
+        clock.setOnClickListener(this)
+        date.setOnClickListener(this)
+        setBatteryClickable(true)
+    }
+
+    override fun onClick(v: View) {
+        if (v == clock) {
+            activityStarter.postStartActivityDismissingKeyguard(Intent(
+                    AlarmClock.ACTION_SHOW_ALARMS), 0)
+        } else if (v == date) {
+            val builder: Uri.Builder = CalendarContract.CONTENT_URI.buildUpon()
+            builder.appendPath("time")
+            builder.appendPath(System.currentTimeMillis().toString())
+            val todayIntent: Intent = Intent(Intent.ACTION_VIEW, builder.build())
+            activityStarter.postStartActivityDismissingKeyguard(todayIntent, 0)
+        } else if (v == batteryIcon) {
+            activityStarter.postStartActivityDismissingKeyguard(Intent(
+                    Intent.ACTION_POWER_USAGE_SUMMARY), 0)
+        }
+    }
+
+    override fun onLongClick(v: View): Boolean {
+        if (v == clock || v == date) {
+            val nIntent: Intent = Intent(Intent.ACTION_MAIN)
+            nIntent.setClassName("com.android.settings",
+                    "com.android.settings.Settings\$DateTimeSettingsActivity")
+            activityStarter.startActivity(nIntent, true /* dismissShade */)
+            vibrator.vibrate(VibrationEffect.createOneShot(50, VibrationEffect.DEFAULT_AMPLITUDE))
+            return true
+        }
+        return false
     }
 
     override fun onViewAttached() {
@@ -520,6 +560,7 @@ constructor(
             updateBatteryMode()
         }
         setNetworkTrafficVisible(qsExpandedFraction == 1f && !privacyChipVisible)
+        setBatteryClickable(qsExpandedFraction == 1f || !privacyChipVisible)
     }
 
     private fun logInstantEvent(message: String) {
@@ -590,6 +631,12 @@ constructor(
     private fun setNetworkTrafficVisible(visible: Boolean) {
         val isLandscape = resources.configuration.orientation == Configuration.ORIENTATION_LANDSCAPE
         networkTraffic!!.setAlpha(if (visible && !isLandscape) 1f else 0f)
+
+    }
+
+    private fun setBatteryClickable(clickable: Boolean) {
+        batteryIcon.setOnClickListener(if (clickable) this else null)
+        batteryIcon.setClickable(clickable)
     }
 
     override fun dump(pw: PrintWriter, args: Array<out String>) {
