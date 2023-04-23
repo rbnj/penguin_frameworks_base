@@ -12186,7 +12186,7 @@ public final class Settings {
          * @hide
          */
         public static final String QS_STYLE_ROUND = "qs_style_round";
-        
+
         /**
          * Quicksettings columns
          * @hide
@@ -12210,6 +12210,12 @@ public final class Settings {
          * @hide
          */
         public static final String QQS_NUM_COLUMNS_LANDSCAPE = "qqs_num_columns_landscape";
+
+        /**
+         * Brightness slider styles
+         * @hide
+         */
+        public static final String BRIGHTNESS_SLIDER_STYLE = "brightness_slider_style";
 
         /**
          * These entries are considered common between the personal and the managed profile,
