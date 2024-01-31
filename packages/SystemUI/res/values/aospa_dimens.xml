@@ -36,4 +36,8 @@
     <dimen name="custom_qs_panel_padding_top">0dp</dimen>
     <dimen name="custom_notification_row_padding">16dp</dimen>
     <dimen name="custom_qs_tile_label_line_height">20sp</dimen>
+
+    <!-- HD calling icon -->
+    <dimen name="signal_icon_viewport_size">24dp</dimen>
+
 </resources>
