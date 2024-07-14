@@ -7442,5 +7442,6 @@ message MetricsEvent {
 
     // PENGUIN Metrics
     PENGUIN = 4501;
+    DIALOG_MORE_INFO = 1751;
   }
 }
