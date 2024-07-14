@@ -107,6 +107,7 @@ import java.util.concurrent.Executor;
 import java.util.stream.Collectors;
 
 import javax.inject.Inject;
+import java.util.concurrent.atomic.AtomicInteger;
 
 /**
  * Controls the application of theme overlays across the system for all users.
@@ -654,10 +655,33 @@ public class ThemeOverlayController implements CoreStartable, Dumpable {
     private void assignTonalPaletteToOverlay(String name, FabricatedOverlay overlay,
             TonalPalette tonalPalette) {
         String resourcePrefix = "android:color/system_" + name;
+        boolean isNeut = name.startsWith("neutral");
+        AtomicInteger index = new AtomicInteger(0);
+        List<Integer> plainShades = new ArrayList<>();
+
+        String[] colorHexCodes = {
+            "#FFFFFF",
+            "#F8F8F8",
+            "#E2E2E2",
+            "#C6C6C6",
+            "#ABABAB",
+            "#919191",
+            "#5E5E5E",
+            "#474747",
+            "#303030",
+            "#131313",
+            "#000000",
+            "#000000"
+        };
+
+        for (String colorHexCode : colorHexCodes) {
+            int colorInt = Color.parseColor(colorHexCode);
+            plainShades.add(colorInt);
+        }
 
         tonalPalette.getAllShadesMapped().forEach((key, value) -> {
             String resourceName = resourcePrefix + "_" + key;
-            int colorValue = ColorUtils.setAlphaComponent(value, 0xFF);
+            int colorValue = ColorUtils.setAlphaComponent(isNeut ? plainShades.get(index.getAndIncrement()) : value, 0xFF);
             overlay.setResourceValue(resourceName, TYPE_INT_COLOR_ARGB8, colorValue,
                     null /* configuration */);
         });
