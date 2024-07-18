@@ -797,7 +797,6 @@ public class CentralSurfacesImpl implements CoreStartable, CentralSurfaces {
             Provider<FingerprintManager> fingerprintManager,
             ActivityStarter activityStarter,
             BurnInProtectionController burnInProtectionController,
-            SysUiState sysUiState,
             SecureSettings secureSettings
     ) {
         mContext = context;
