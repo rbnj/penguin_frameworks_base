@@ -16,8 +16,8 @@
 <vector
     xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:androidprv="http://schemas.android.com/apk/prv/res/android"
-    android:width="@dimen/qs_icon_size"
-    android:height="@dimen/qs_icon_size"
+    android:width="@dimen/qs_auto_brightness_icon_size"
+    android:height="@dimen/qs_auto_brightness_icon_size"
     android:viewportWidth="24"
     android:viewportHeight="24">
     <path

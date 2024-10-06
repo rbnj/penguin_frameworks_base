@@ -16,9 +16,10 @@
 <com.android.systemui.settings.brightness.ToggleIconView
     xmlns:android="http://schemas.android.com/apk/res/android"
     android:id="@+id/toggle"
-    android:layout_width="48dp"
-    android:layout_height="48dp"
-    android:layout_marginStart="8dp"
+    android:layout_width="@dimen/qs_auto_brightness_toggle_size"
+    android:layout_height="@dimen/qs_auto_brightness_toggle_size"
+    android:layout_marginStart="@dimen/qs_auto_brightness_toggle_marginStart"
+    android:layout_gravity="center_vertical"
     android:button="@null"
     android:foreground="@drawable/ic_qs_brightness_auto"
     android:foregroundGravity="center"
